@@ -19,20 +19,46 @@ NOTION_DATABASE_ID = os.environ["NOTION_DATABASE_ID"]
 LINE_CHANNEL_TOKEN = os.environ["LINE_CHANNEL_TOKEN"]
 LINE_USER_ID = os.environ["LINE_USER_ID"]
 
-NOTION_VERSION = "2022-06-28"
+# 新版 Notion API：多 data source 的資料庫必須用 data source 端點查詢，
+# 舊的 databases/{id}/query 會回 400。這個版本號啟用 data source 查詢。
+NOTION_VERSION = "2025-09-03"
 LOOKAHEAD_DAYS = 2  # 未來幾天內到期都算「快到期」
 
 # 視為「已結束、不用提醒」的狀態
 DONE_STATUSES = {"完成", "已封存"}
 
 
-def query_notion_tasks():
-    url = f"https://api.notion.com/v1/databases/{NOTION_DATABASE_ID}/query"
-    headers = {
+def _headers():
+    return {
         "Authorization": f"Bearer {NOTION_TOKEN}",
         "Notion-Version": NOTION_VERSION,
         "Content-Type": "application/json",
     }
+
+
+def _check(resp, what):
+    # 讓 Notion / LINE 真正的錯誤訊息浮出來，而不是只有一句 400 Bad Request
+    if not resp.ok:
+        raise RuntimeError(f"{what} 失敗 {resp.status_code}：{resp.text}")
+    return resp
+
+
+def resolve_data_source_id():
+    """用資料庫 ID 反查底下的 data source。
+    優先取名為「任務」的那個，避開空的殘留 data source。"""
+    url = f"https://api.notion.com/v1/databases/{NOTION_DATABASE_ID}"
+    resp = _check(requests.get(url, headers=_headers(), timeout=30), "取得資料庫")
+    sources = resp.json().get("data_sources", [])
+    if not sources:
+        raise RuntimeError(f"資料庫沒有任何 data source：{resp.text}")
+    for s in sources:
+        if s.get("name") == "任務":
+            return s["id"]
+    return sources[0]["id"]
+
+
+def query_notion_tasks(data_source_id):
+    url = f"https://api.notion.com/v1/data_sources/{data_source_id}/query"
 
     today = datetime.utcnow().date()
     deadline = today + timedelta(days=LOOKAHEAD_DAYS)
@@ -60,8 +86,10 @@ def query_notion_tasks():
         body = dict(payload)
         if start_cursor:
             body["start_cursor"] = start_cursor
-        resp = requests.post(url, headers=headers, json=body, timeout=30)
-        resp.raise_for_status()
+        resp = _check(
+            requests.post(url, headers=_headers(), json=body, timeout=30),
+            "查詢任務",
+        )
         data = resp.json()
         results.extend(data.get("results", []))
         has_more = data.get("has_more", False)
@@ -131,12 +159,12 @@ def push_line_message(message):
         "to": LINE_USER_ID,
         "messages": [{"type": "text", "text": message}],
     }
-    resp = requests.post(url, headers=headers, json=payload, timeout=30)
-    resp.raise_for_status()
+    _check(requests.post(url, headers=headers, json=payload, timeout=30), "LINE 推播")
 
 
 def main():
-    pages = query_notion_tasks()
+    data_source_id = resolve_data_source_id()
+    pages = query_notion_tasks(data_source_id)
     message = build_message(pages)
     if message is None:
         print("沒有快到期或逾期的任務，不推播。")

@@ -14,10 +14,12 @@ import sys
 import requests
 from datetime import datetime, timedelta
 
-NOTION_TOKEN = os.environ["NOTION_TOKEN"]
-NOTION_DATABASE_ID = os.environ["NOTION_DATABASE_ID"]
-LINE_CHANNEL_TOKEN = os.environ["LINE_CHANNEL_TOKEN"]
-LINE_USER_ID = os.environ["LINE_USER_ID"]
+# .strip()：貼 secret 時常會不小心夾帶頭尾空白或換行，
+# requests 會因此拒發 HTTP header，這裡先清乾淨。
+NOTION_TOKEN = os.environ["NOTION_TOKEN"].strip()
+NOTION_DATABASE_ID = os.environ["NOTION_DATABASE_ID"].strip()
+LINE_CHANNEL_TOKEN = os.environ["LINE_CHANNEL_TOKEN"].strip()
+LINE_USER_ID = os.environ["LINE_USER_ID"].strip()
 
 # 新版 Notion API：多 data source 的資料庫必須用 data source 端點查詢，
 # 舊的 databases/{id}/query 會回 400。這個版本號啟用 data source 查詢。

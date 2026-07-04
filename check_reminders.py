@@ -14,12 +14,16 @@ import sys
 import requests
 from datetime import datetime, timedelta
 
-# .strip()：貼 secret 時常會不小心夾帶頭尾空白或換行，
-# requests 會因此拒發 HTTP header，這裡先清乾淨。
-NOTION_TOKEN = os.environ["NOTION_TOKEN"].strip()
-NOTION_DATABASE_ID = os.environ["NOTION_DATABASE_ID"].strip()
-LINE_CHANNEL_TOKEN = os.environ["LINE_CHANNEL_TOKEN"].strip()
-LINE_USER_ID = os.environ["LINE_USER_ID"].strip()
+def _clean(v):
+    # 移除所有空白與換行（含貼上時夾帶在「中間」的）。
+    # token / ID 本來就不含空白，全部拿掉最保險，requests 才不會拒發 header。
+    return "".join(v.split())
+
+
+NOTION_TOKEN = _clean(os.environ["NOTION_TOKEN"])
+NOTION_DATABASE_ID = _clean(os.environ["NOTION_DATABASE_ID"])
+LINE_CHANNEL_TOKEN = _clean(os.environ["LINE_CHANNEL_TOKEN"])
+LINE_USER_ID = _clean(os.environ["LINE_USER_ID"])
 
 # 新版 Notion API：多 data source 的資料庫必須用 data source 端點查詢，
 # 舊的 databases/{id}/query 會回 400。這個版本號啟用 data source 查詢。

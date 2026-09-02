@@ -1,0 +1,15 @@
+# Cloudflare Worker 設定檔
+# 部署指令：npx wrangler deploy
+name = "line-translate-bot"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# 目標語言可以直接寫在這裡（非機密，用一般變數就好）。
+# 要翻成哪些語言就改這行，逗號分隔，代碼對照 worker.js 裡的 LANG_LABELS。
+[vars]
+TARGET_LANGS = "en,ja,zh-TW"
+
+# 機密（LINE_CHANNEL_TOKEN、LINE_CHANNEL_SECRET）不要寫在這個檔案裡，
+# 用指令設定，才不會外洩到 git：
+#   npx wrangler secret put LINE_CHANNEL_TOKEN
+#   npx wrangler secret put LINE_CHANNEL_SECRET

@@ -1,0 +1,14 @@
+# 上傳資料夾：只提供圖片，禁止執行任何程式
+Options -Indexes
+<FilesMatch "\.(php[0-9]?|phtml|phar|pl|py|cgi|sh|asp|aspx|jsp|htm|html|shtml|svg|js)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'"
+</IfModule>

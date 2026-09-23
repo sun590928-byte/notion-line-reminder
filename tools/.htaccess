@@ -1,0 +1,7 @@
+# 程式碼資料夾：禁止從網頁直接存取
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Deny from all
+</IfModule>

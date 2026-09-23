@@ -1,0 +1,73 @@
+/* 會員登入頁與會員中心（官網外觀與連結頁外觀共用；變數會自動對應兩種主題） */
+.m-card {
+  --m-text: var(--s-text, var(--text));
+  --m-muted: var(--s-muted, var(--muted));
+  --m-border: var(--s-border, var(--line));
+  --m-accent: var(--s-link, var(--accent));
+  --m-btn: var(--s-btn, var(--text));
+  --m-btn-text: var(--s-btnText, var(--bg));
+  --m-radius: var(--radius, 18px);
+  width: 100%; max-width: 480px; padding: clamp(28px, 5vw, 44px); color: var(--m-text);
+  background: var(--s-card, rgba(255, 255, 255, .08)); border: 1px solid var(--m-border); border-radius: calc(var(--m-radius) * 1.4);
+  box-shadow: 0 40px 90px -50px rgba(0, 0, 0, .55); animation: mRise .7s cubic-bezier(.2, .75, .2, 1) both;
+}
+.lt .m-card { background: color-mix(in srgb, var(--bg) 72%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); }
+@keyframes mRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.m-card h1 { margin: 0 0 6px; font-size: 24px; letter-spacing: .03em; }
+.m-card h2 { margin: 0 0 12px; font-size: 15px; letter-spacing: .12em; color: var(--m-accent); }
+.m-muted { color: var(--m-muted); margin: 0; font-size: 14px; }
+.m-note { margin: 18px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--m-muted); }
+.m-login { text-align: center; }
+.m-moon { width: 56px; height: 56px; margin: 0 auto 18px; border-radius: 50%; box-shadow: inset -14px -4px 0 0 var(--m-accent); transform: rotate(-20deg); filter: drop-shadow(0 0 18px color-mix(in srgb, var(--m-accent) 50%, transparent)); animation: mFloat 6s ease-in-out infinite; }
+@keyframes mFloat { 50% { transform: rotate(-20deg) translateY(-6px); } }
+.m-stack { flex-direction: column; align-items: stretch; margin-top: 22px; }
+.m-back { display: inline-block; margin-top: 22px; font-size: 14px; color: var(--m-muted); text-decoration: none; }
+.m-back:hover { color: var(--m-text); }
+.m-alert { margin: 16px 0 0; padding: 10px 14px; border-radius: 12px; font-size: 14px; text-align: left; }
+.m-ok { background: rgba(22, 163, 74, .14); color: inherit; border: 1px solid rgba(22, 163, 74, .35); }
+.m-err { background: rgba(220, 38, 38, .12); color: inherit; border: 1px solid rgba(220, 38, 38, .35); }
+
+/* 登入按鈕（連結頁外觀下使用） */
+.lt .login-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.lt .login-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 13px 22px; border-radius: 12px; font: inherit; font-weight: 700; font-size: 15px; text-decoration: none; border: 1px solid transparent; transition: transform .25s, box-shadow .25s, filter .25s; }
+.lt .login-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -16px rgba(0, 0, 0, .5); }
+.lt .login-btn .ico { width: 22px; height: 22px; }
+.lt .login-line { background: #06c755; color: #fff; }
+.lt .login-google { background: #fff; color: #1f1f1f; border-color: #dadce0; }
+
+/* 會員中心 */
+.m-center { max-width: 560px; }
+.m-head { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+.m-avatar { width: 68px; height: 68px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--m-accent) 60%, transparent); }
+.m-avatar-ph { display: grid; place-items: center; font-size: 28px; font-weight: 700; color: var(--m-btn-text); background: var(--m-btn); }
+.m-sec { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--m-border); }
+.m-form { display: flex; flex-direction: column; gap: 14px; }
+.m-form label { display: block; font-size: 13px; font-weight: 600; color: var(--m-muted); }
+.m-form input:not([type=checkbox]) { display: block; width: 100%; margin-top: 6px; padding: 11px 13px; font: inherit; font-size: 15px; color: var(--m-text); background: transparent; border: 1.5px solid var(--m-border); border-radius: 12px; }
+.m-form input:focus { outline: none; border-color: var(--m-accent); }
+.m-switch { display: flex !important; align-items: center; gap: 10px; cursor: pointer; color: var(--m-text) !important; font-weight: 500 !important; font-size: 14px !important; }
+.m-switch input { position: absolute; opacity: 0; pointer-events: none; }
+.m-switch span { position: relative; width: 44px; height: 26px; flex: none; border-radius: 999px; background: var(--m-border); transition: background .25s; }
+.m-switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .25); transition: transform .3s cubic-bezier(.2, .75, .2, 1); }
+.m-switch input:checked + span { background: #06c755; }
+.m-switch input:checked + span::after { transform: translateX(18px); }
+.m-switch input:focus-visible + span { outline: 2px solid var(--m-accent); outline-offset: 2px; }
+.m-btn { align-self: flex-start; padding: 11px 26px; border: 0; border-radius: 999px; font: inherit; font-weight: 700; cursor: pointer; color: var(--m-btn-text); background: var(--m-btn); transition: transform .25s, box-shadow .25s; }
+.m-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -14px rgba(0, 0, 0, .5); }
+.m-ids { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.m-ids li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--m-border); border-radius: 14px; }
+.m-ids form { margin: 0; }
+.m-id-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; flex: none; }
+.m-id-icon .ico { width: 22px; height: 22px; }
+.m-id-line { background: #06c755; color: #fff; }
+.m-id-google { background: #fff; color: #4285f4; border: 1px solid #e5e7eb; }
+.m-id-text { flex: 1; min-width: 0; }
+.m-id-text small { display: block; color: var(--m-muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 4px; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; color: var(--m-accent); cursor: pointer; text-decoration: none; }
+.m-link .ico { width: 16px; height: 16px; }
+.m-link:hover { text-decoration: underline; }
+.m-ok-line { display: flex; align-items: flex-start; gap: 8px; margin: 0; font-size: 14px; }
+.m-ok-line .ico { width: 20px; height: 20px; color: #06c755; flex: none; }
+.m-sec .login-btn { margin-top: 12px; }
+.m-logout { display: flex; justify-content: space-between; align-items: center; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--m-border); }
+.m-logout .m-back { margin: 0; }

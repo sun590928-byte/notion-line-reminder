@@ -1,0 +1,16 @@
+# aftermoonF — 備援設定：若 Plesk 文件根目錄仍是 httpdocs（專案根目錄），
+# 自動把所有請求轉到 public/。建議做法是把文件根目錄改成 httpdocs/public。
+Options -Indexes
+DirectoryIndex index.php
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(app|config|storage|tools|docs|node_modules|vendor)(/|$) - [F,L]
+  RewriteRule ^(\.git|\.env|composer\.|package) - [F,L]
+  RewriteCond %{REQUEST_URI} !(^|/)public/
+  RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+<FilesMatch "^\.">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>

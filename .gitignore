@@ -1,0 +1,7 @@
+# 設定與執行期資料（不要提交）
+/config/config.php
+/storage/*.sqlite
+/storage/*.sqlite-*
+/node_modules/
+.DS_Store
+Thumbs.db

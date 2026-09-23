@@ -1,0 +1,13 @@
+{
+  "name": "aftermoonf",
+  "private": true,
+  "version": "1.0.0",
+  "description": "aftermoonF 官網系統的開發工具（圖示產生器）。正式主機只需要 PHP，不需要 Node.js。",
+  "scripts": {
+    "icons": "node tools/build-icons.mjs"
+  },
+  "devDependencies": {
+    "lucide-static": "1.47.0",
+    "simple-icons": "16.32.0"
+  }
+}

@@ -1,0 +1,39 @@
+# aftermoonF — Apache 設定（Plesk Linux 主機預設使用 Apache + nginx）
+Options -Indexes
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+<IfModule mod_mime.c>
+  AddCharset UTF-8 .js .css .svg .json
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # 已存在的檔案（圖片、CSS、JS）直接回應，其餘交給 index.php
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+  RewriteRule ^ index.php [L]
+</IfModule>
+
+# 靜態檔快取
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 30 days"
+  ExpiresByType application/javascript "access plus 30 days"
+  ExpiresByType text/javascript "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/webp "access plus 30 days"
+  ExpiresByType image/gif "access plus 30 days"
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/json image/svg+xml
+</IfModule>
+
+# 禁止讀取隱藏檔
+<FilesMatch "^\.">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>

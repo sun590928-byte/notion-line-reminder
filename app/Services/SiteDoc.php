@@ -7,7 +7,9 @@ namespace App\Services;
 final class SiteDoc
 {
     public const RESERVED_SLUGS = ['admin', 'api', 'auth', 'login', 'logout', 'member', 'links', 'preview', 'install',
-        'assets', 'uploads', 'sitemap.xml', 'robots.txt', 'index.php', 'go', 'favicon.ico'];
+        'assets', 'uploads', 'sitemap.xml', 'robots.txt', 'index.php', 'go', 'favicon.ico',
+        // 專案資料夾名稱（文件根目錄設在 httpdocs 時這些網址會被 .htaccess 擋下或導向）
+        'public', 'app', 'config', 'storage', 'tools', 'docs', 'node_modules', 'vendor'];
 
     public static function themes(): array
     {

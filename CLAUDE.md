@@ -26,7 +26,7 @@ aftermoonF 官網系統：純 PHP 8.1+（無框架、無 Composer 相依）、�
 ## 本機開發與測試
 
 ```bash
-php -S 127.0.0.1:8000 -t public tools/dev-server.php   # 開 /install，資料庫選 SQLite
+php -S 127.0.0.1:8000 -t public tools/dev-server.php   # 開 /install，資料庫選 SQLite；安裝碼在 storage/setup-code.txt
 for f in $(find app public tools -name '*.php'); do php -l $f >/dev/null || echo $f; done
 node --experimental-default-type=module --check public/assets/js/admin/site-editor.js
 ```

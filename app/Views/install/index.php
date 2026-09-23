@@ -1,5 +1,6 @@
 <?php
-/** @var array $checks @var array $errors @var array $input @var ?string $manualConfig @var bool $canInstall */
+/** @var array $checks @var array $errors @var array $input @var ?string $manualConfig @var bool $canInstall @var string $setupCode @var bool $askReuse */
+$reuseChecked = !empty($_POST['reuse_existing']);
 ?>
 <div class="card card-wide">
   <div class="brand">
@@ -34,7 +35,11 @@
   <?php endif; ?>
 
   <form method="post" action="<?= e(url('/install')) ?>" class="form" autocomplete="off">
-    <h2>2. 資料庫</h2>
+    <h2>2. 安裝碼</h2>
+    <p class="hint">為了避免別人搶先安裝你的網站，請到 Plesk →「檔案」開啟 <code>storage/setup-code.txt</code>，把第一行的安裝碼貼到這裡。</p>
+    <label>安裝碼<input name="setup_code" value="<?= e($setupCode) ?>" required spellcheck="false" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX-XXXX"></label>
+
+    <h2>3. 資料庫</h2>
     <div class="seg">
       <label><input type="radio" name="db_driver" value="mysql" <?= $input['db_driver'] === 'mysql' ? 'checked' : '' ?> <?= extension_loaded('pdo_mysql') ? '' : 'disabled' ?>> MySQL / MariaDB（Plesk 建議）</label>
       <label><input type="radio" name="db_driver" value="sqlite" <?= $input['db_driver'] === 'sqlite' ? 'checked' : '' ?> <?= extension_loaded('pdo_sqlite') ? '' : 'disabled' ?>> SQLite（免設定）</label>
@@ -52,20 +57,25 @@
       </div>
     </div>
     <label>資料表前綴<input name="db_prefix" value="<?= e($input['db_prefix']) ?>"></label>
+    <?php if ($askReuse): ?>
+      <label class="check"><input type="checkbox" name="reuse_existing" value="1" <?= $reuseChecked ? 'checked' : '' ?>> 沿用現有資料（保留原本的管理員帳號與網站內容；LINE／Google 金鑰需要重新輸入）</label>
+    <?php endif; ?>
 
-    <h2>3. 網站</h2>
+    <h2>4. 網站</h2>
     <label>網站名稱<input name="site_name" value="<?= e($input['site_name']) ?>" required></label>
     <label>網站網址<input name="site_url" value="<?= e($input['site_url']) ?>" required>
       <small>LINE／Google 登入的回呼網址會以此為準，請使用正式網域與 https。</small></label>
 
-    <h2>4. 管理員帳號</h2>
+    <h2>5. 管理員帳號</h2>
+    <?php if ($askReuse): ?><p class="hint">勾選「沿用現有資料」時，這一段可以留空，安裝後請用原本的管理員帳號登入。</p><?php endif; ?>
+    <?php $req = $askReuse ? '' : 'required'; ?>
     <div class="row">
-      <label>帳號<input name="admin_user" value="<?= e($input['admin_user']) ?>" required autocomplete="username"></label>
+      <label>帳號<input name="admin_user" value="<?= e($input['admin_user']) ?>" <?= $req ?> autocomplete="username"></label>
       <label>顯示名稱<input name="admin_name" value="<?= e($input['admin_name']) ?>"></label>
     </div>
     <div class="row">
-      <label>密碼（至少 8 字元）<input type="password" name="admin_pass" required minlength="8" autocomplete="new-password"></label>
-      <label>再輸入一次<input type="password" name="admin_pass2" required minlength="8" autocomplete="new-password"></label>
+      <label>密碼（至少 8 字元）<input type="password" name="admin_pass" <?= $req ?> minlength="8" autocomplete="new-password"></label>
+      <label>再輸入一次<input type="password" name="admin_pass2" <?= $req ?> minlength="8" autocomplete="new-password"></label>
     </div>
 
     <button class="btn btn-block" type="submit" <?= $canInstall ? '' : 'disabled' ?>>開始安裝</button>

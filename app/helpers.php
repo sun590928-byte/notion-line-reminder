@@ -204,5 +204,5 @@ function safe_return(?string $path, string $fallback = '/'): string
 
 function client_hash(): string
 {
-    return substr(hash('sha256', Request::ip() . '|' . date('Y-m-d') . '|' . Config::get('app_key', '')), 0, 32);
+    return substr(hash('sha256', Request::ipGroup() . '|' . date('Y-m-d') . '|' . Config::get('app_key', '')), 0, 32);
 }

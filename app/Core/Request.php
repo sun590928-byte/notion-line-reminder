@@ -149,6 +149,23 @@ final class Request
         return (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
     }
 
+    /** 流量限制用的來源：IPv6 以 /64 網段計算（一般用戶可自由使用整個 /64，逐一位址計算會被繞過） */
+    public static function ipGroup(): string
+    {
+        $ip = self::ip();
+        if (str_contains($ip, ':')) {
+            $bin = @inet_pton($ip);
+            if (is_string($bin) && strlen($bin) === 16) {
+                // ::ffff:1.2.3.4 是以 IPv6 表示的 IPv4 位址，要照 IPv4 計算，不能全部併成同一個 /64
+                if (str_starts_with($bin, str_repeat("\0", 10) . "\xFF\xFF")) {
+                    return (string) inet_ntop(substr($bin, 12));
+                }
+                return (string) inet_ntop(substr($bin, 0, 8) . str_repeat("\0", 8)) . '/64';
+            }
+        }
+        return $ip;
+    }
+
     public static function userAgent(): string
     {
         return substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 500);

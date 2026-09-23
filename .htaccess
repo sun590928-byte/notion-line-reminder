@@ -5,7 +5,7 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteRule ^(app|config|storage|tools|docs|node_modules|vendor)(/|$) - [F,L]
-  RewriteRule ^(\.git|\.env|composer\.|package) - [F,L]
+  RewriteRule ^(\.git|\.env|composer\.(json|lock)$|package(-lock)?\.json$) - [F,L]
   RewriteCond %{REQUEST_URI} !(^|/)public/
   RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>

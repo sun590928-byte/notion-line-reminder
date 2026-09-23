@@ -100,6 +100,21 @@ final class Session
         session_regenerate_id(true);
     }
 
+    /** 設定與 session 相同屬性的 cookie；$path 以網站子目錄為基準，$expires 為 0 表示關閉瀏覽器即失效 */
+    public static function cookie(string $name, string $value, int $expires, string $path = '/'): void
+    {
+        if (headers_sent()) {
+            return;
+        }
+        setcookie($name, $value, [
+            'expires' => $expires,
+            'path' => Request::base() . $path,
+            'secure' => Request::isHttps(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
+
     public static function destroyKeys(array $keys): void
     {
         foreach ($keys as $k) {

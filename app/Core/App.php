@@ -23,6 +23,16 @@ final class App
             return;
         }
 
+        // 文件根目錄設在 httpdocs 時，直接輸入 /public/... 也能開到網站：導回正式網址，避免整站出現兩份
+        $base = Request::base();
+        if (str_ends_with($base, '/public') && Request::method() === 'GET') {
+            $canonical = base_url();
+            if (rtrim((string) parse_url($canonical, PHP_URL_PATH), '/') . '/public' === $base) {
+                $query = (string) ($_SERVER['QUERY_STRING'] ?? '');
+                redirect($canonical . $path . ($query !== '' ? '?' . $query : ''), 301);
+            }
+        }
+
         $router = new Router();
         (require AMF_ROOT . '/app/routes.php')($router);
         $router->dispatch(Request::method(), $path);

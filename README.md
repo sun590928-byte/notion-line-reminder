@@ -43,7 +43,7 @@
 2. Plesk「資料庫」新增一個 MySQL／MariaDB 資料庫與使用者。
 3. 用 Plesk「Git」連接這個 GitHub 儲存庫（或下載 ZIP 上傳到 `httpdocs`）。
 4. 「主機設定」把文件根目錄改成 `httpdocs/public`，並用 Let's Encrypt 啟用 HTTPS。
-5. 開啟 `https://你的網域/install`，填資料庫與管理員帳號。
+5. 開啟 `https://你的網域/install`，貼上安裝碼（在 Plesk「檔案」的 `storage/setup-code.txt`），填資料庫與管理員帳號。
 6. 到 `https://你的網域/admin` 開始編輯。
 
 接著設定 LINE：**[docs/line-setup.md](docs/line-setup.md)**；Google 登入：**[docs/google-setup.md](docs/google-setup.md)**；後台操作：**[docs/admin-guide.md](docs/admin-guide.md)**。
@@ -77,7 +77,7 @@
 
 ```bash
 php -S localhost:8000 -t public tools/dev-server.php
-# 開啟 http://localhost:8000/install，資料庫選 SQLite 即可
+# 開啟 http://localhost:8000/install，資料庫選 SQLite 即可（安裝碼：cat storage/setup-code.txt）
 ```
 
 修改圖示清單後重新產生圖示資料（需要 Node.js，正式主機不需要）：

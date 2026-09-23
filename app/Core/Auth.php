@@ -5,6 +5,9 @@ namespace App\Core;
 
 final class Auth
 {
+    /** 沒勾「保持登入」時使用的瀏覽器工作階段 cookie（關閉瀏覽器即消失，後台登入隨之失效） */
+    private const BIND_COOKIE = 'amf_admin';
+
     private static array|false|null $admin = null;
     private static array|false|null $member = null;
 
@@ -19,7 +22,7 @@ final class Auth
                 $last = (int) Session::get('admin_last', 0);
                 $row = DB::one('SELECT `id`, `username`, `display_name`, `password_hash` FROM {admins} WHERE `id` = ?', [$id]);
                 $stamp = $row ? substr(hash('sha256', (string) $row['password_hash']), 0, 16) : '';
-                if (!$row || ($last > 0 && time() - $last > $ttl) || !hash_equals($stamp, (string) Session::get('admin_stamp', ''))) {
+                if (!$row || ($last > 0 && time() - $last > $ttl) || !hash_equals($stamp, (string) Session::get('admin_stamp', '')) || !self::browserBound()) {
                     self::logoutAdmin();
                 } else {
                     unset($row['password_hash']);
@@ -39,14 +42,30 @@ final class Auth
         Session::set('admin_ttl', $remember ? 1209600 : 43200); // 記住我：14 天；否則 12 小時未活動自動登出
         Session::set('admin_last', time());
         Session::set('admin_stamp', substr(hash('sha256', (string) $row['password_hash']), 0, 16));
+        if ($remember) {
+            Session::forget('admin_bind');
+        } else {
+            $token = Crypto::token(16);
+            Session::set('admin_bind', hash('sha256', $token));
+            Session::cookie(self::BIND_COOKIE, $token, 0);
+        }
         DB::update('admins', ['last_login_at' => DB::now()], '`id` = ?', [(int) $row['id']]);
         self::$admin = null;
     }
 
     public static function logoutAdmin(): void
     {
-        Session::destroyKeys(['admin_id', 'admin_ttl', 'admin_last', 'admin_stamp']);
+        Session::destroyKeys(['admin_id', 'admin_ttl', 'admin_last', 'admin_stamp', 'admin_bind']);
+        if (isset($_COOKIE[self::BIND_COOKIE])) {
+            Session::cookie(self::BIND_COOKIE, '', time() - 3600);
+        }
         self::$admin = false;
+    }
+
+    private static function browserBound(): bool
+    {
+        $bind = (string) Session::get('admin_bind', '');
+        return $bind === '' || hash_equals($bind, hash('sha256', (string) ($_COOKIE[self::BIND_COOKIE] ?? '')));
     }
 
     /** 更新密碼後刷新目前 session 的驗證戳記 */

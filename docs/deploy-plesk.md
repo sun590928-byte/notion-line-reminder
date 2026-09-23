@@ -15,7 +15,8 @@
 
 **網站與網域 → 你的網域 → PHP 設定**
 
-1. 「PHP 版本」選 **8.2** 或 **8.3**（處理常式選「FPM application served by Apache」或「FPM served by nginx」都可以）。
+1. 「PHP 版本」選 **8.2** 或 **8.3**，處理常式請選「**FPM application served by Apache**」（Plesk 預設）。
+   選「FPM application served by nginx」的話 `.htaccess` 不會生效，需要另外加上文件最後〈只有 nginx〉一節的指令。
 2. 建議同時把下列數值調高（在同一頁的「效能和安全性設定」）：
    - `upload_max_filesize`：`16M`
    - `post_max_size`：`20M`
@@ -69,15 +70,17 @@
 
 1. 用瀏覽器開啟 `https://你的網域/install`
 2. 檢查環境：若有標示「必要」的紅點，回到 PHP 設定處理
-3. 資料庫選 **MySQL / MariaDB**，填入步驟 2 的資料庫名稱、使用者、密碼、主機
-4. 網站網址：確認是 `https://` 開頭、與「偏好網域」一致的正式網址
-5. 設定管理員帳號與密碼（至少 8 個字元）
-6. 按「開始安裝」→ 完成後自動登入後台 `/admin`
+3. **安裝碼**：到 Plesk **檔案** → `httpdocs/storage/setup-code.txt`（點檔名即可檢視），把第一行（例如 `ABCD-EFGH-JKMN-PQRS`）貼到「安裝碼」欄位。
+   這是為了避免程式上傳後、你完成安裝之前，被別人搶先打開 `/install` 把網站裝走。
+4. 資料庫選 **MySQL / MariaDB**，填入步驟 2 的資料庫名稱、使用者、密碼、主機
+5. 網站網址：確認是 `https://` 開頭、與「偏好網域」一致的正式網址
+6. 設定管理員帳號與密碼（至少 8 個字元）
+7. 按「開始安裝」→ 完成後自動登入後台 `/admin`
 
 安裝完成後：
 - 首頁會顯示預設的**連結頁**（暮光主題）
 - **官方網站**已建立 4 個頁面的範本，但是**未發布、隱藏中**
-- 安裝程式會自動鎖定；`/install` 之後只會轉到後台
+- 安裝程式會自動鎖定（`storage/installed.lock`），安裝碼檔案也會自動刪除；`/install` 之後只會轉到後台
 
 若出現「無法自動寫入設定檔」，代表 `config/` 資料夾沒有寫入權限：照畫面指示在 Plesk「檔案」建立 `config/config.php` 並貼上內容即可。
 
@@ -132,4 +135,5 @@ location ~ ^/(app|config|storage|tools|docs)/ {
 | 圖片上傳失敗 | 調高 PHP 的 `upload_max_filesize`、`post_max_size`；確認 `public/uploads/` 可寫入。 |
 | LINE 登入顯示 `redirect_uri` 錯誤 | LINE Developers 的 Callback URL 必須和後台「LINE 整合」顯示的完全相同（https、www 都要一致）。 |
 | 換網域後登入失效 | 到 **網站設定 → 正式網址** 改成新網址，並更新 LINE／Google 後台的回呼網址。 |
+| 安裝時出現「這個資料庫已經有 aftermoonF 的資料」 | 通常是搬家或設定檔遺失。最好從備份還原 `config/config.php`；沒有備份時可勾選「沿用現有資料」，安裝後用原本的管理員帳號登入，並重新輸入 LINE／Google 金鑰（舊金鑰無法解密）。 |
 | 忘記管理員密碼 | 在 Plesk「資料庫 → phpMyAdmin」執行：`UPDATE amf_admins SET password_hash = '<新雜湊>' WHERE username = 'admin';`，雜湊可在 Plesk「PHP 設定」旁的終端機執行 `php -r "echo password_hash('新密碼', PASSWORD_DEFAULT);"` 產生。 |

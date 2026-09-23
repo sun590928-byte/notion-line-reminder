@@ -63,7 +63,9 @@ final class ApiController
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->respond(false, 'Email 格式不正確。', 422);
         }
-        if (!RateLimit::hit('contact:' . client_hash(), 5, 900)) {
+        // 同一來源 15 分鐘最多 5 則、一天最多 20 則
+        $source = client_hash();
+        if (!RateLimit::hit('contact:' . $source, 5, 900) || !RateLimit::hit('contact:day:' . $source, 20, 86400)) {
             $this->respond(false, '送出次數太多，請稍後再試。', 429);
         }
         $member = Auth::member();
@@ -77,7 +79,7 @@ final class ApiController
             'data' => null,
             'member_id' => $member['id'] ?? 0,
             'is_read' => 0,
-            'ip_hash' => client_hash(),
+            'ip_hash' => $source,
             'created_at' => DB::now(),
         ];
         DB::insert('form_submissions', $row);

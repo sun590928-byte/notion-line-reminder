@@ -69,7 +69,7 @@ final class EditorController extends AdminBase
         $config += [
             'name' => $name,
             'csrf' => csrf_token(),
-            'base' => url(''),
+            'base' => Request::base(),
             'api' => url('/admin/api'),
             'admin' => $this->admin['display_name'],
         ];

@@ -28,7 +28,7 @@ $items = [
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
-<meta name="base-url" content="<?= e(url('')) ?>">
+<meta name="base-url" content="<?= e(App\Core\Request::base()) ?>">
 <title><?= e($title) ?>｜<?= e(Settings::site()['name']) ?> 後台</title>
 <link rel="icon" href="<?= e(url('/assets/img/favicon.svg')) ?>">
 <link rel="stylesheet" href="<?= e(asset('css/admin.css')) ?>">

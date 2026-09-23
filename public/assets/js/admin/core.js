@@ -98,7 +98,8 @@ export async function api(path, { method = 'POST', data, form } = {}) {
   try { json = await res.json(); } catch { json = null; }
   if (res.status === 401 && json?.login) {
     toast('登入逾時，即將前往登入頁…', 'err');
-    setTimeout(() => { location.href = siteUrl('/admin/login?next=' + encodeURIComponent(location.pathname)); }, 1400);
+    const here = CFG.base && location.pathname.startsWith(CFG.base + '/') ? location.pathname.slice(CFG.base.length) : location.pathname;
+    setTimeout(() => { location.href = siteUrl('/admin/login?next=' + encodeURIComponent(here + location.search)); }, 1400);
     throw new ApiError(json.error || '請重新登入', 401, json);
   }
   if (res.status === 419) throw new ApiError('頁面已過期，請重新整理後再試一次。', 419, json);
